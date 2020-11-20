@@ -1,13 +1,17 @@
 """
 《机器学习》作业
 
+学号：2000900
+姓名：张敬川
 11.19
+
+调试记录：
 
 """
 import numpy as np
 from sklearn import datasets
 
-
+# 定义朴素贝叶斯类
 class NaiveBayes(object):
 
     def __init__(self, x, y):
@@ -42,26 +46,26 @@ class NaiveBayes(object):
                     break
         return index
 
-    # 计算先验概率
+    # 计算先验概率: P(A)
     def compute_PA(self):
         PA = np.zeros([self.class_num])  # 初始化
         for i in range(self.class_num):
             PA[i] = np.mean(np.equal(self.y, self.labels[i]))
         return PA
 
-    # 计算概率密度函数
+    # 计算概率密度函数: P(B1|A), P(B2|A), ... , P(Bn|A), 其实是计算μ和σ
     def compute_ProbDensityFun(self):
         # 获取每个类别所含样本的编号
         index = self.find_index()
         # 初始化矩阵
-        mu = np.zeros([self.class_num, self.n])  # 储存均值
+        mu = np.zeros([self.class_num, self.n])     # 储存均值
         sigma = np.zeros([self.class_num, self.n])  # 储存标准差
 
         for i in range(self.class_num):
             for j in range(self.n):
                 data_x = self.x[index[i], j]  # 找到y(i)类别下的x(j)列数据
-                mu[i, j] = np.mean(data_x)  # 求均值
-                sigma[i, j] = np.std(data_x)  # 求标准差
+                mu[i, j] = np.mean(data_x)    # 求均值μ
+                sigma[i, j] = np.std(data_x)  # 求标准差σ
 
         return mu, sigma
 
@@ -81,18 +85,22 @@ class NaiveBayes(object):
                   np.exp(-(x-mu)**2/(2*sigma**2))
             return res
 
-        m = input_x.shape[0]
-        n = input_x.shape[1]
+        m = input_x.shape[0]       # 预测样本的个数
+        n = input_x.shape[1]       # 预测样本的维数
         self.pred = np.zeros([m])  # 储存预测结果
 
         for i in range(m):
-            self.prob = np.zeros([self.class_num])  # 初始化概率
+            # 初始化概率
+            self.prob = np.zeros([self.class_num])
+
             for j in range(self.class_num):
                 self.PBA = 1  # 初始化
 
                 for k in range(n):
+                    # 计算P(B1|A)*P(B2|A)*...*P(Bn|A)
                     self.PBA *= norm(self.mu[j, k], self.sigma[j, k], input_x[i, k])
 
+                # 计算分子P(B|A)P(A)
                 self.prob[j] = self.PBA * self.PA[j]
 
             self.pred[i] = np.argmax(self.prob)  # 取最大值
@@ -101,15 +109,17 @@ class NaiveBayes(object):
 
 
 if __name__ == '__main__':
-
-    iris = datasets.load_iris()  # 导入数据
-
-    model = NaiveBayes(iris.data, iris.target)  # 实例化类
-
-    model.fit()  # 训练
-    pred = model.predict(iris.data)  # 测试
-
-    ac = np.mean(np.equal(pred, iris.target))  # 准确率
+    # 导入数据
+    iris = datasets.load_iris()
+    # 实例化类
+    model = NaiveBayes(iris.data, iris.target)
+    # 训练（用全部150个样本）
+    model.fit()
+    # 测试（用全部150个样本）
+    pred = model.predict(iris.data)
+    # 计算准确率
+    accuracy = np.mean(np.equal(pred, iris.target))
+    print('预测准确率：%.2f%s' % (100*accuracy, '%'))
 
 
 
