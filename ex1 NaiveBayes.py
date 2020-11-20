@@ -1,17 +1,16 @@
 """
 《机器学习》作业
+朴素贝叶斯算法
 
 学号：2000900
 姓名：张敬川
 11.19
 
-调试记录：
-
 """
 import numpy as np
 from sklearn import datasets
 
-# 定义朴素贝叶斯类
+# 定义朴素贝叶斯模型类
 class NaiveBayes(object):
 
     def __init__(self, x, y):
