@@ -68,7 +68,7 @@ class LR(object):
         plt.show()
 
 
-# %% 导入数据
+# %% 数据集测试
 if __name__ == '__main__':
     data = pd.read_csv('data_LR.csv', header=None)   # 读取cvs文件
     plt.plot(data.iloc[:, 0], data.iloc[:, 1], '.')  # 绘制原始样本
