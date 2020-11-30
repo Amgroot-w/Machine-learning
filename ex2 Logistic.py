@@ -8,11 +8,14 @@
 调试记录：
 
 """
-# %%
+# %% 导入包
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import cap
+# 显示中文
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.rcParams['axes.unicode_minus'] = False
 
 # %% 定义Logistic回归类
 class logistic(object):
@@ -59,6 +62,21 @@ class logistic(object):
             print("准确率：%.2f%s" % (ac*100, '%'))
         return self.pred
 
+    # 绘制原始样本分布
+    @staticmethod
+    def plot_original_data(data):
+        colors = ['c', 'orange']
+        marker = ['o', 's']
+        for i in range(2):
+            score1 = data.loc[data['result'] == i]['score1']
+            score2 = data.loc[data['result'] == i]['score2']
+            plt.scatter(score1, score2, c=colors[i], marker=marker[i], s=50, linewidths=0.8, edgecolors='k')
+
+        plt.xlabel('x1')
+        plt.ylabel('x2')
+        plt.title('原始样本分布')
+        plt.show()
+
     # 绘制决策边界
     def plot_decision_boundary(self, data):
         X = data.values
@@ -80,12 +98,13 @@ class logistic(object):
 
         plt.xlabel('x1')
         plt.ylabel('x2')
+        plt.title('Logistic回归后绘制出的决策边界')
         plt.show()
 
 
 # %% 在数据集（线性不可分）测试模型
 if __name__ == '__main__':
-    data = pd.read_csv('data_Logistic.csv', names=['score1', 'score2', 'result'])             # 导入数据
+    data = pd.read_csv('data_Logistic.csv', names=['score1', 'score2', 'result'])                 # 导入数据
     data.iloc[:, :2] = (data.iloc[:, :2] - np.mean(data.iloc[:, :2])) / np.std(data.iloc[:, :2])  # 归一化
     x = cap.feature_mapping(data['score1'], data['score2'], degree=8)                             # 决策变量
     y = np.array([data['result']]).T                                                              # 标签
@@ -93,6 +112,7 @@ if __name__ == '__main__':
     model = logistic(x, y)                           # 实例化一个Logistic类
     model.train(epochs=10000, alpha=0.05, lamda=20)  # 训练
     pred = model.predict(x)                          # 预测
+    model.plot_original_data(data)                   # 可视化原始样本分布
     model.plot_decision_boundary(data)               # 可视化决策边界
 
 
